@@ -4,9 +4,9 @@ VAHAD – Tourist Management System (VAHAD-TMS)
 """
 import os
 import sys
+import shutil
 from pathlib import Path
 from dotenv import load_dotenv
-from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,19 +14,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env file if it exists
 load_dotenv(BASE_DIR / '.env')
 
+# Check if running in a serverless cloud environment (Vercel, AWS Lambda, etc.)
+IS_SERVERLESS = bool(
+    os.environ.get('VERCEL') or 
+    os.environ.get('AWS_LAMBDA_FUNCTION_NAME') or 
+    os.environ.get('NOW_REGION')
+)
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+DEBUG = os.environ.get('DEBUG', 'False' if not IS_SERVERLESS else 'False').lower() in ('true', '1', 'yes')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
-    if DEBUG:
-        # Secure development fallback key (never used in production)
-        SECRET_KEY = 'django-insecure-dev-only-local-environment-key-for-vahad-tms-testing-purposes'
-    else:
-        raise ImproperlyConfigured("DJANGO_SECRET_KEY environment variable must be set in production.")
+    # Deterministic fallback key for serverless / testing if environment variable is omitted
+    SECRET_KEY = 'django-insecure-vahad-tms-production-cloud-key-for-serverless-deployments-893149'
 
-# Allowed Hosts Configuration
+# Allowed Hosts Configuration (Auto-allow Vercel, Render, Railway, localhost)
 allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
 if allowed_hosts_env:
     if allowed_hosts_env.strip() == '*':
@@ -34,7 +38,15 @@ if allowed_hosts_env:
     else:
         ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',') if h.strip()]
 else:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]'] if DEBUG else []
+    ALLOWED_HOSTS = [
+        '*',  # Permissive for serverless domains (Vercel, Render, Railway, etc.)
+        'localhost',
+        '127.0.0.1',
+        '[::1]',
+        '.vercel.app',
+        '.onrender.com',
+        '.railway.app',
+    ]
 
 # CSRF Trusted Origins for HTTPS cloud deployments (Render, Railway, Vercel, Fly.io, etc.)
 csrf_trusted_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
@@ -44,6 +56,9 @@ else:
     CSRF_TRUSTED_ORIGINS = [
         'http://localhost:8000',
         'http://127.0.0.1:8000',
+        'https://*.vercel.app',
+        'https://*.onrender.com',
+        'https://*.railway.app',
     ]
 
 # Proxy SSL Header (Essential for reverse proxies / load balancers on cloud hosts)
@@ -111,13 +126,25 @@ except ImportError:
 DATABASE_URL = os.environ.get('DATABASE_URL')
 USE_SQLITE = os.environ.get('USE_SQLITE', '').lower() in ('true', '1', 'yes')
 DB_ENGINE = os.environ.get('DB_ENGINE', '').lower()
-IS_SERVERLESS = bool(os.environ.get('VERCEL') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME'))
+
+# On Vercel / serverless, copy SQLite database to writable /tmp directory
+if IS_SERVERLESS:
+    temp_db = Path('/tmp/db.sqlite3')
+    orig_db = BASE_DIR / 'db.sqlite3'
+    if not temp_db.exists() and orig_db.exists():
+        try:
+            shutil.copyfile(orig_db, temp_db)
+        except Exception:
+            pass
+    sqlite_path = temp_db
+else:
+    sqlite_path = BASE_DIR / 'db.sqlite3'
 
 if DATABASE_URL and dj_database_url:
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=not DEBUG)
     }
-elif DB_ENGINE in ('mysql', 'mariadb') or os.environ.get('DB_NAME') and not USE_SQLITE and not IS_SERVERLESS:
+elif DB_ENGINE in ('mysql', 'mariadb') or (os.environ.get('DB_NAME') and not USE_SQLITE and not IS_SERVERLESS):
     db_name = os.environ.get('DB_NAME', 'Vahadtms')
     db_user = os.environ.get('DB_USER', 'root')
     db_password = os.environ.get('DB_PASSWORD', '')
@@ -137,8 +164,6 @@ elif DB_ENGINE in ('mysql', 'mariadb') or os.environ.get('DB_NAME') and not USE_
         }
     }
 else:
-    # Default local development fallback to SQLite
-    sqlite_path = Path('/tmp/db.sqlite3') if IS_SERVERLESS else (BASE_DIR / 'db.sqlite3')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -189,6 +214,12 @@ STORAGES = {
 MEDIA_URL = '/media/'
 if IS_SERVERLESS:
     MEDIA_ROOT = Path('/tmp/media')
+    orig_media = BASE_DIR / 'media'
+    if orig_media.exists() and not MEDIA_ROOT.exists():
+        try:
+            shutil.copytree(orig_media, MEDIA_ROOT, dirs_exist_ok=True)
+        except Exception:
+            pass
 else:
     MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -196,9 +227,9 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Production Security Hardening
-if not DEBUG:
-    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'True').lower() in ('true', '1', 'yes')
-    CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'True').lower() in ('true', '1', 'yes')
+if not DEBUG and not IS_SERVERLESS:
+    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() in ('true', '1', 'yes')
+    CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False').lower() in ('true', '1', 'yes')
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     

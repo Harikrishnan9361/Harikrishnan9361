@@ -6,16 +6,7 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "runtime": "python3.12",
-        "includeFiles": [
-          "db.sqlite3",
-          "media/**",
-          "static/**",
-          "staticfiles/**",
-          "vahad_app/**",
-          "vahad_project/**",
-          "populate_db.py"
-        ]
+        "runtime": "python3.12"
       }
     }
   ],
