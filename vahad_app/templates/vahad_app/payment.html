@@ -1,0 +1,464 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Secure Checkout - VAHAD Travel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-page-bg {
+        background: radial-gradient(circle at 10% 10%, rgba(255, 81, 47, 0.06) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 90%, rgba(221, 36, 118, 0.06) 0%, transparent 40%),
+                    #f8fafc;
+        min-height: calc(100vh - 160px);
+        padding: 40px 20px 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .checkout-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid #e2e8f0;
+        border-radius: 28px;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 580px;
+        padding: 40px;
+        position: relative;
+        animation: checkoutEnter 0.5s ease-out;
+    }
+
+    @keyframes checkoutEnter {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Simulation Badge */
+    .demo-mode-banner {
+        background: #fffbeb;
+        border: 1px solid #fef3c7;
+        color: #b45309;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 8px 16px;
+        border-radius: 50px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* Checkout Header */
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .dest-pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 81, 47, 0.08);
+        color: #FF512F;
+        border: 1px solid rgba(255, 81, 47, 0.2);
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .checkout-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .checkout-subtitle {
+        color: #64748b;
+        font-size: 0.92rem;
+        margin: 0;
+    }
+
+    /* Payment Tabs */
+    .payment-tab-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+    }
+
+    .payment-tab-btn {
+        background: transparent;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 8px;
+        font-family: 'Outfit', 'Poppins', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .payment-tab-btn.active {
+        background: #ffffff;
+        color: #0f172a;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    /* VIP Pro Banner */
+    .vip-pro-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        border-radius: 18px;
+        padding: 20px 24px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+    }
+
+    .vip-info-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fbbf24;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 3px;
+    }
+
+    .vip-info-desc {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .vip-toggle-switch {
+        position: relative;
+        width: 52px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+    }
+
+    .vip-toggle-switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: #ffffff;
+        border-radius: 50%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .vip-toggle-switch.active {
+        background: #fbbf24;
+        border-color: #f59e0b;
+    }
+
+    .vip-toggle-switch.active::after {
+        transform: translateX(24px);
+    }
+
+    /* Form Fields */
+    .field-group {
+        margin-bottom: 18px;
+    }
+
+    .field-label {
+        display: block;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 7px;
+    }
+
+    .field-input {
+        width: 100%;
+        padding: 13px 16px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: 'Outfit', 'Poppins', sans-serif;
+        font-size: 0.95rem;
+        color: #0f172a;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+
+    .field-input:focus {
+        background: #ffffff;
+        border-color: #FF512F;
+        box-shadow: 0 0 0 3.5px rgba(255, 81, 47, 0.12);
+    }
+
+    /* QR Code Container */
+    .qr-container-card {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 18px;
+        padding: 24px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .qr-image-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 12px;
+    }
+
+    .qr-image-wrapper img {
+        width: 140px;
+        height: 140px;
+        border-radius: 12px;
+        background: white;
+        padding: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Pay Button */
+    .btn-checkout-submit {
+        width: 100%;
+        padding: 18px 24px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: none;
+        border-radius: 16px;
+        color: #ffffff;
+        font-family: 'Outfit', sans-serif;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 12px 25px -5px rgba(15, 23, 42, 0.3);
+        transition: all 0.3s ease;
+        margin-top: 25px;
+    }
+
+    .btn-checkout-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 30px -5px rgba(15, 23, 42, 0.4);
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    }
+
+    .btn-checkout-submit .btn-label {
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    .btn-checkout-submit .btn-price {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #fbbf24;
+        transition: all 0.2s ease;
+    }
+
+    .security-badge-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 20px;
+        color: #64748b;
+        font-size: 0.8rem;
+    }
+
+    .security-dot {
+        width: 7px;
+        height: 7px;
+        background: #10b981;
+        border-radius: 50%;
+    }
+
+    @media (max-width: 600px) {
+        .checkout-card {
+            padding: 30px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-page-bg">
+    <div class="checkout-card">
+        <!-- Demo Mode Badge -->
+        <div class="demo-mode-banner">
+            <span>🛡️</span> DEMO PAYMENT GATEWAY (Simulation Mode)
+        </div>
+
+        <!-- Header -->
+        <div class="checkout-header">
+            <div class="dest-pill-badge">
+                <span>✈️</span> {{ booking.destination.name }}
+            </div>
+            <h1 class="checkout-title">Payment & Confirmation</h1>
+            <p class="checkout-subtitle">Booking Ref: #{{ booking.booking_id }}</p>
+        </div>
+
+        <!-- Payment Method Tabs -->
+        <div class="payment-tab-group">
+            <button type="button" class="payment-tab-btn active" onclick="switchPaymentTab('card', this)">
+                <span>💳</span> Card
+            </button>
+            <button type="button" class="payment-tab-btn" onclick="switchPaymentTab('upi', this)">
+                <span>⚡</span> UPI / QR
+            </button>
+            <button type="button" class="payment-tab-btn" onclick="switchPaymentTab('cash', this)">
+                <span>🏨</span> Pay at Hotel
+            </button>
+        </div>
+
+        <!-- VAHAD VIP Pro Upgrade -->
+        <div class="vip-pro-banner">
+            <div>
+                <div class="vip-info-title">👑 VAHAD VIP Protection</div>
+                <div class="vip-info-desc">Zero cancellation fees + 24/7 dedicated concierge (+₹2,999)</div>
+            </div>
+            <div class="vip-toggle-switch" id="proToggle" onclick="toggleVipPro()" role="button" tabindex="0" title="Toggle VIP Protection"></div>
+        </div>
+
+        <!-- Tab 1: Credit / Debit Card -->
+        <div id="payment-card-view">
+            <div class="field-group">
+                <label class="field-label">Cardholder Name</label>
+                <input type="text" class="field-input" placeholder="e.g. {{ booking.customer_name }}" value="{{ booking.customer_name }}">
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">Card Number (Demo / Simulation)</label>
+                <input type="text" class="field-input" placeholder="4532 •••• •••• 8892" maxlength="19" value="4532 8888 9999 1234">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="field-group">
+                    <label class="field-label">Expiration Date</label>
+                    <input type="text" class="field-input" placeholder="MM / YY" maxlength="5" value="12/28">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">CVV / CVC</label>
+                    <input type="password" class="field-input" placeholder="•••" maxlength="4" value="123">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: UPI / QR -->
+        <div id="payment-upi-view" style="display: none;">
+            <div class="field-group">
+                <label class="field-label">UPI ID / Virtual Address</label>
+                <input type="text" class="field-input" placeholder="username@oksbi or username@paytm" value="{{ request.user.username }}@oksbi">
+            </div>
+
+            <div class="qr-container-card">
+                <div class="qr-image-wrapper">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=VAHAD-Booking-{{ booking.booking_id }}" alt="Payment QR Code">
+                </div>
+                <p style="margin: 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">
+                    Scan with GPay, PhonePe, Paytm, or BHIM UPI
+                </p>
+            </div>
+        </div>
+
+        <!-- Tab 3: Pay at Hotel -->
+        <div id="payment-cash-view" style="display: none; text-align: center; padding: 25px 15px;">
+            <div style="font-size: 2.8rem; margin-bottom: 12px;">🏨</div>
+            <h3 style="color: #0f172a; margin: 0 0 8px 0; font-size: 1.2rem;">Pay Upon Check-in</h3>
+            <p style="color: #64748b; font-size: 0.88rem; line-height: 1.5; margin: 0;">
+                Your reservation is guaranteed immediately. Settle the balance in cash or card at the front desk when you arrive.
+            </p>
+        </div>
+
+        <!-- Secure Form for Submission -->
+        <form method="POST" action="{% url 'payment' booking.booking_id %}" id="paymentForm">
+            {% csrf_token %}
+            <input type="hidden" name="payment_method" id="selectedMethodInput" value="Credit / Debit Card">
+            <input type="hidden" name="vip_protection" id="vipProtectionInput" value="false">
+
+            <!-- Checkout Action Button -->
+            <button type="submit" class="btn-checkout-submit" id="checkoutBtn">
+                <span class="btn-label">Authorize & Confirm (Demo)</span>
+                <span class="btn-price" id="checkoutPrice">₹{{ booking.total_price }}</span>
+            </button>
+        </form>
+
+        <div class="security-badge-footer">
+            <span class="security-dot"></span>
+            <span>256-Bit SSL Bank-Grade Encryption Guaranteed</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedMethod = 'Credit / Debit Card';
+    let isVipActive = false;
+    const baseTotal = parseFloat("{{ booking.total_price }}") || 0;
+    const checkoutPrice = document.getElementById('checkoutPrice');
+    const toggleSwitch = document.getElementById('proToggle');
+    const selectedMethodInput = document.getElementById('selectedMethodInput');
+    const vipProtectionInput = document.getElementById('vipProtectionInput');
+
+    function switchPaymentTab(tab, element) {
+        document.querySelectorAll('.payment-tab-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+
+        if (tab === 'card') selectedMethod = 'Credit / Debit Card';
+        if (tab === 'upi') selectedMethod = 'UPI / QR Payment';
+        if (tab === 'cash') selectedMethod = 'Pay at Hotel';
+
+        selectedMethodInput.value = selectedMethod;
+
+        document.getElementById('payment-card-view').style.display = (tab === 'card') ? 'block' : 'none';
+        document.getElementById('payment-upi-view').style.display = (tab === 'upi') ? 'block' : 'none';
+        document.getElementById('payment-cash-view').style.display = (tab === 'cash') ? 'block' : 'none';
+    }
+
+    function formatPrice(val) {
+        return '₹' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    checkoutPrice.innerText = formatPrice(baseTotal);
+
+    function toggleVipPro() {
+        isVipActive = !isVipActive;
+        toggleSwitch.classList.toggle('active');
+        vipProtectionInput.value = isVipActive ? "true" : "false";
+
+        const total = isVipActive ? (baseTotal + 2999) : baseTotal;
+
+        checkoutPrice.style.opacity = '0';
+        setTimeout(() => {
+            checkoutPrice.innerText = formatPrice(total);
+            checkoutPrice.style.opacity = '1';
+        }, 150);
+    }
+</script>
+{% endblock %}

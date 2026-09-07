@@ -1,0 +1,133 @@
+/* Global Styles */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #00c6ff;
+    /* Gradient start */
+    --accent-color: #ffaa00;
+    --text-color: #333;
+    --bg-color: #f4f7f6;
+    --nav-bg: rgba(255, 255, 255, 0.9);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .logo a {
+    text-decoration: none;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links li a:hover {
+    color: var(--primary-color);
+}
+
+.profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logout-btn {
+    color: #d9534f !important;
+}
+
+/* Footer */
+footer {
+    background: #2c3e50;
+    color: #fff;
+    padding: 40px 0 10px;
+    margin-top: 50px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 20px;
+}
+
+.footer-section h3 {
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+}
+
+.footer-section a {
+    color: #fff;
+    margin-right: 15px;
+    font-size: 18px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+    font-size: 14px;
+}
+
+/* Utilities */
+.messages {
+    padding: 10px;
+    text-align: center;
+}
+
+.alert {
+    padding: 10px;
+    margin: 10px auto;
+    width: 50%;
+    border-radius: 5px;
+}
+
+.alert.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.alert.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+main {
+    min-height: 80vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

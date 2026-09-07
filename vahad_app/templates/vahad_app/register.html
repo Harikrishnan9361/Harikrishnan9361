@@ -1,0 +1,384 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Create Account - VAHAD Travel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page-wrapper {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 20px;
+        position: relative;
+        background: radial-gradient(circle at 85% 15%, rgba(255, 81, 47, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 15% 85%, rgba(221, 36, 118, 0.08) 0%, transparent 40%),
+                    #f8fafc;
+        overflow: hidden;
+    }
+
+    .auth-page-wrapper::before {
+        content: '';
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(221, 36, 118, 0.12) 0%, rgba(255, 81, 47, 0.05) 50%, transparent 70%);
+        bottom: -200px;
+        left: -150px;
+        filter: blur(70px);
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .auth-card-wide {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 28px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+        width: 100%;
+        max-width: 580px;
+        padding: 45px 40px;
+        position: relative;
+        z-index: 1;
+        animation: authCardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes authCardEnter {
+        from {
+            opacity: 0;
+            transform: translateY(25px) scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .auth-brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 81, 47, 0.1);
+        color: #FF512F;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .auth-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .auth-subtitle {
+        color: #64748b;
+        font-size: 0.92rem;
+        margin: 0;
+    }
+
+    .error-alert-box {
+        background: #fef2f2;
+        border-left: 4px solid #ef4444;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 22px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .error-alert-box p {
+        margin: 4px 0;
+        color: #b91c1c;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .auth-form-group {
+        margin-bottom: 18px;
+    }
+
+    .auth-label {
+        display: block;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 7px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        color: #94a3b8;
+        font-size: 1.05rem;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+
+    .auth-input {
+        width: 100%;
+        padding: 13px 16px 13px 44px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        font-family: 'Outfit', 'Poppins', sans-serif;
+        font-size: 0.92rem;
+        color: #0f172a;
+        transition: all 0.25s ease;
+        outline: none;
+    }
+
+    .auth-input:focus {
+        background: #ffffff;
+        border-color: #FF512F;
+        box-shadow: 0 0 0 4px rgba(255, 81, 47, 0.12);
+    }
+
+    .file-upload-box {
+        background: #f8fafc;
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        position: relative;
+    }
+
+    .file-upload-box:hover {
+        background: #ffffff;
+        border-color: #FF512F;
+    }
+
+    .file-upload-box input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .upload-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+    }
+
+    .upload-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .upload-subtext {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    .auth-btn-submit {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px -4px rgba(221, 36, 118, 0.35);
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .auth-btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -4px rgba(221, 36, 118, 0.45);
+        opacity: 0.98;
+    }
+
+    .auth-btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .auth-footer-text {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 0.92rem;
+        color: #64748b;
+    }
+
+    .auth-footer-link {
+        color: #FF512F;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .auth-footer-link:hover {
+        color: #DD2476;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+        .form-grid-2 {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .auth-card-wide {
+            padding: 30px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <div class="auth-card-wide">
+        <div class="auth-header">
+            <div class="auth-brand-badge">
+                <span>✈️</span> Smart Travel
+            </div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join thousands of travelers exploring India with VAHAD</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="error-alert-box">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p><span>⚠️</span> {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p><span>⚠️</span> {{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-grid-2">
+                <div class="auth-form-group">
+                    <label class="auth-label" for="id_username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input type="text" name="username" id="id_username" class="auth-input" placeholder="e.g. alex24" value="{{ form.username.value|default:'' }}" required autofocus>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-label" for="id_full_name">Full Name</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🪪</span>
+                        <input type="text" name="full_name" id="id_full_name" class="auth-input" placeholder="e.g. Alex Johnson" value="{{ form.full_name.value|default:'' }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="auth-form-group">
+                    <label class="auth-label" for="id_email">Email Address</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">✉️</span>
+                        <input type="email" name="email" id="id_email" class="auth-input" placeholder="you@domain.com" value="{{ form.email.value|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-label" for="id_phone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📞</span>
+                        <input type="tel" name="phone" id="id_phone" class="auth-input" placeholder="+91 98765 43210" value="{{ form.phone.value|default:'' }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="auth-form-group">
+                    <label class="auth-label" for="id_password1">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" name="password1" id="id_password1" class="auth-input" placeholder="Create password" required>
+                    </div>
+                </div>
+
+                <div class="auth-form-group">
+                    <label class="auth-label" for="id_password2">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔑</span>
+                        <input type="password" name="password2" id="id_password2" class="auth-input" placeholder="Repeat password" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-form-group">
+                <label class="auth-label">Profile Avatar (Optional)</label>
+                <div class="file-upload-box">
+                    <input type="file" name="profile_photo" id="profilePhotoInput" accept="image/*" onchange="previewAvatar(this)">
+                    <span class="upload-icon">📸</span>
+                    <span class="upload-text" id="uploadLabel">Upload profile image</span>
+                    <span class="upload-subtext">PNG, JPG, WEBP up to 5MB</span>
+                </div>
+            </div>
+
+            <button type="submit" class="auth-btn-submit">
+                <span>Complete Registration</span>
+                <span>➔</span>
+            </button>
+        </form>
+
+        <p class="auth-footer-text">
+            Already have an account? <a href="{% url 'login' %}" class="auth-footer-link">Sign In</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const fileName = input.files[0].name;
+            document.getElementById('uploadLabel').innerText = 'Selected: ' + fileName;
+        }
+    }
+</script>
+{% endblock %}

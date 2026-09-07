@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "vahad_project/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.12",
+        "includeFiles": [
+          "db.sqlite3",
+          "media/**",
+          "static/**",
+          "staticfiles/**",
+          "vahad_app/**",
+          "vahad_project/**",
+          "populate_db.py"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "vahad_project/wsgi.py"
+    }
+  ]
+}

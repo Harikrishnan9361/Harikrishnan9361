@@ -1,0 +1,539 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Book Trip to {{ destination.name }} - VAHAD{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-page-bg {
+        background: #f8fafc;
+        min-height: 100vh;
+        padding: 40px 20px 80px;
+    }
+
+    .booking-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Page Header */
+    .booking-page-header {
+        margin-bottom: 30px;
+    }
+
+    .booking-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .booking-breadcrumb a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .booking-breadcrumb a:hover {
+        color: #FF512F;
+    }
+
+    .booking-main-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    /* Grid Layout */
+    .booking-grid {
+        display: grid;
+        grid-template-columns: 1.55fr 1fr;
+        gap: 35px;
+        align-items: start;
+    }
+
+    /* Left Form Card */
+    .booking-form-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+    }
+
+    .user-session-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        color: #475569;
+        margin-bottom: 25px;
+    }
+
+    .user-session-badge strong {
+        color: #0f172a;
+    }
+
+    /* Form Section Dividers */
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 25px 0 18px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-section-title:first-of-type {
+        margin-top: 0;
+    }
+
+    .section-number {
+        width: 26px;
+        height: 26px;
+        background: linear-gradient(135deg, #FF512F, #DD2476);
+        color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+    }
+
+    .form-row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .form-field-group {
+        margin-bottom: 18px;
+    }
+
+    .form-field-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 7px;
+    }
+
+    .form-field-input,
+    .form-field-select,
+    .form-field-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: 'Outfit', 'Poppins', sans-serif;
+        font-size: 0.92rem;
+        color: #0f172a;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+
+    .form-field-input:focus,
+    .form-field-select:focus,
+    .form-field-textarea:focus {
+        background: #ffffff;
+        border-color: #FF512F;
+        box-shadow: 0 0 0 3.5px rgba(255, 81, 47, 0.12);
+    }
+
+    .form-field-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    /* Right Summary Card */
+    .booking-summary-sticky {
+        position: sticky;
+        top: 90px;
+        background: #ffffff;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+    }
+
+    .dest-hero-preview {
+        position: relative;
+        height: 170px;
+        overflow: hidden;
+    }
+
+    .dest-hero-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .dest-hero-preview:hover img {
+        transform: scale(1.05);
+    }
+
+    .dest-overlay-badge {
+        position: absolute;
+        bottom: 12px;
+        left: 16px;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(8px);
+        color: #ffffff;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .summary-content {
+        padding: 24px 28px;
+    }
+
+    .summary-dest-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 4px 0;
+    }
+
+    .summary-dest-location {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .price-breakdown-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .price-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #475569;
+        margin-bottom: 10px;
+    }
+
+    .price-item-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .price-item-row strong {
+        color: #0f172a;
+    }
+
+    .total-price-banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-top: 14px;
+        margin-top: 12px;
+        border-top: 1.5px dashed #cbd5e1;
+    }
+
+    .total-price-banner .label {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .total-price-banner .amount {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #FF512F;
+        background: linear-gradient(135deg, #FF512F, #DD2476);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .btn-proceed-checkout {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 16px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px -4px rgba(221, 36, 118, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-proceed-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -4px rgba(221, 36, 118, 0.45);
+        opacity: 0.98;
+    }
+
+    .perks-list {
+        margin-top: 20px;
+        list-style: none;
+        padding: 0;
+    }
+
+    .perks-list li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.82rem;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+
+    @media (max-width: 960px) {
+        .booking-grid {
+            grid-template-columns: 1fr;
+        }
+        .booking-summary-sticky {
+            position: relative;
+            top: 0;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .form-row-2 {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .booking-form-card {
+            padding: 25px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="booking-page-bg">
+    <div class="booking-wrapper">
+        <!-- Page Header -->
+        <div class="booking-page-header">
+            <div class="booking-breadcrumb">
+                <a href="{% url 'home' %}">Home</a>
+                <span>›</span>
+                <a href="{% url 'destinations' %}">Destinations</a>
+                <span>›</span>
+                <span>{{ destination.name }}</span>
+            </div>
+            <h1 class="booking-main-title">Book Your Journey</h1>
+        </div>
+
+        <div class="booking-grid">
+            <!-- Left: Form -->
+            <div class="booking-form-card">
+                <div class="user-session-badge">
+                    <span>👤</span> Logged in as: <strong>{{ request.user.username }}</strong> ({{ request.user.email }})
+                </div>
+
+                <form method="POST" action="{% url 'booking' destination.id %}" id="bookingForm">
+                    {% csrf_token %}
+
+                    <!-- Section 1: Guest Details -->
+                    <div class="form-section-title">
+                        <span class="section-number">1</span>
+                        <span>Primary Guest Information</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Full Name</label>
+                            <input type="text" name="customer_name" class="form-field-input"
+                                value="{% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}"
+                                placeholder="e.g. Alex Morgan" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Email Address</label>
+                            <input type="email" name="email" class="form-field-input" value="{{ request.user.email }}"
+                                placeholder="e.g. alex@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Phone Number</label>
+                            <input type="tel" name="phone" class="form-field-input" placeholder="+91 98765 43210"
+                                value="{{ request.user.userprofile.phone }}" required>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Address (Optional)</label>
+                            <input type="text" name="address" class="form-field-input" placeholder="City, State">
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Trip Dates & Travelers -->
+                    <div class="form-section-title">
+                        <span class="section-number">2</span>
+                        <span>Dates & Group Size</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Check-in Date</label>
+                            <input type="date" name="travel_date" class="form-field-input" required id="travelDateInput">
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Check-out Date (Optional)</label>
+                            <input type="date" name="check_out_date" class="form-field-input" id="checkOutInput">
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="form-field-label">Number of Travelers</label>
+                        <input type="number" name="num_travelers" id="numTravelers" class="form-field-input" value="1" min="1" max="20" required>
+                    </div>
+
+                    <!-- Section 3: Preferences -->
+                    <div class="form-section-title">
+                        <span class="section-number">3</span>
+                        <span>Stay & Travel Preferences</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-field-group">
+                            <label class="form-field-label">Hotel Type</label>
+                            <select name="hotel_type" id="hotelType" class="form-field-select">
+                                <option value="Standard" selected>Standard Resort (1.0x)</option>
+                                <option value="Budget">Budget Stay (0.8x)</option>
+                                <option value="Luxury">Luxury Suite & Spa (2.5x)</option>
+                            </select>
+                        </div>
+                        <div class="form-field-group">
+                            <label class="form-field-label">Transport Mode</label>
+                            <select name="transport" class="form-field-select">
+                                <option value="Flight">✈️ Flight Travel</option>
+                                <option value="Train">🚆 Superfast Express</option>
+                                <option value="Bus">🚌 AC Volvo Coach</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="form-field-label">Special Requests (Optional)</label>
+                        <textarea name="special_requests" class="form-field-textarea"
+                            placeholder="e.g. Vegetarian meals, early check-in, wheelchair access..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-proceed-checkout">
+                        <span>Proceed to Secure Payment</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right: Sticky Live Estimate Card -->
+            <div class="booking-summary-sticky">
+                <div class="dest-hero-preview">
+                    {% if destination.image %}
+                    <img src="{{ destination.image.url }}" alt="{{ destination.name }}">
+                    {% else %}
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #FF512F, #DD2476);"></div>
+                    {% endif %}
+                    <div class="dest-overlay-badge">
+                        <span>📍</span> {{ destination.location }}
+                    </div>
+                </div>
+
+                <div class="summary-content">
+                    <h3 class="summary-dest-title">{{ destination.name }}</h3>
+                    <div class="summary-dest-location">Best time: {{ destination.best_time_to_visit|default:"All Year Round" }}</div>
+
+                    <div class="price-breakdown-card">
+                        <div class="price-item-row">
+                            <span>Base Rate (per guest)</span>
+                            <strong>₹{{ destination.price_estimate }}</strong>
+                        </div>
+                        <div class="price-item-row">
+                            <span>Travelers Count</span>
+                            <strong id="displayTravelers">x 1</strong>
+                        </div>
+                        <div class="price-item-row">
+                            <span>Hotel Multiplier</span>
+                            <strong id="displayMultiplier">1.0x</strong>
+                        </div>
+                        <div class="total-price-banner">
+                            <span class="label">Estimated Total</span>
+                            <span class="amount" id="estimatedTotal">₹{{ destination.price_estimate }}</span>
+                        </div>
+                    </div>
+
+                    <ul class="perks-list">
+                        <li><span>✅</span> Free Cancellation within 24 hours</li>
+                        <li><span>🔒</span> Verified & Secure Transactions</li>
+                        <li><span>📞</span> 24/7 Dedicated Trip Assistance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Real-time calculation logic
+    const basePrice = parseFloat("{{ destination.price_estimate }}") || 0;
+    const travelersInput = document.getElementById('numTravelers');
+    const hotelSelect = document.getElementById('hotelType');
+
+    const displayTravelers = document.getElementById('displayTravelers');
+    const displayMultiplier = document.getElementById('displayMultiplier');
+    const estimatedTotal = document.getElementById('estimatedTotal');
+
+    function calculateTotal() {
+        const travelers = parseInt(travelersInput.value) || 1;
+        let multiplier = 1.0;
+        const hotel = hotelSelect.value;
+        if (hotel === 'Budget') multiplier = 0.8;
+        if (hotel === 'Luxury') multiplier = 2.5;
+
+        const total = basePrice * travelers * multiplier;
+
+        displayTravelers.innerText = `x ${travelers}`;
+        displayMultiplier.innerText = `${multiplier}x`;
+        estimatedTotal.innerText = '₹' + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    travelersInput.addEventListener('input', calculateTotal);
+    hotelSelect.addEventListener('change', calculateTotal);
+
+    // Default min date to today
+    const today = new Date().toISOString().split('T')[0];
+    const travelDateInput = document.getElementById('travelDateInput');
+    if (travelDateInput) {
+        travelDateInput.min = today;
+    }
+
+    calculateTotal();
+</script>
+{% endblock %}

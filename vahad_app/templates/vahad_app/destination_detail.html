@@ -1,0 +1,526 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}{{ destination.name }} - Explore with VAHAD{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dest-detail-page {
+        background: #f8fafc;
+        min-height: 100vh;
+        padding-bottom: 80px;
+    }
+
+    /* Hero Banner */
+    .dest-hero-section {
+        position: relative;
+        min-height: 480px;
+        display: flex;
+        align-items: flex-end;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.3) 0%, rgba(15, 23, 42, 0.85) 100%),
+                    url('{% if destination.image %}{{ destination.image.url }}{% else %}https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80{% endif %}');
+        background-size: cover;
+        background-position: center;
+        padding: 50px 20px 40px;
+        color: #ffffff;
+    }
+
+    .hero-inner-container {
+        max-width: 1250px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .dest-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 14px;
+    }
+
+    .dest-breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .dest-breadcrumb a:hover {
+        color: #FF512F;
+    }
+
+    .dest-tag-pills {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    .tag-category-badge {
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        color: #ffffff;
+        padding: 5px 14px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .tag-rating-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        color: #fbbf24;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .dest-hero-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 3.2rem;
+        font-weight: 800;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+        line-height: 1.1;
+    }
+
+    .dest-hero-loc {
+        font-size: 1.15rem;
+        color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+    }
+
+    /* Key Facts Bar */
+    .quick-facts-bar {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 20px 30px;
+        margin: -35px auto 40px;
+        max-width: 1250px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e2e8f0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .fact-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .fact-icon {
+        width: 48px;
+        height: 48px;
+        background: #f1f5f9;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+
+    .fact-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .fact-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    /* Main Grid Layout */
+    .dest-main-grid {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 1.65fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    /* Content Card */
+    .detail-card-panel {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 30px;
+    }
+
+    .panel-section-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 18px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dest-description-text {
+        color: #475569;
+        font-size: 1.02rem;
+        line-height: 1.8;
+        margin-bottom: 25px;
+    }
+
+    /* Inclusions Grid */
+    .inclusions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 15px;
+    }
+
+    .inclusion-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.92rem;
+        color: #334155;
+        background: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        font-weight: 500;
+    }
+
+    /* Sticky Booking Sidebar */
+    .booking-sticky-box {
+        position: sticky;
+        top: 90px;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+
+    .sidebar-price-banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-bottom: 20px;
+        border-bottom: 1.5px dashed #cbd5e1;
+        margin-bottom: 22px;
+    }
+
+    .price-starts-label {
+        font-size: 0.85rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .sidebar-price-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #FF512F;
+        background: linear-gradient(135deg, #FF512F, #DD2476);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar-price-val span {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        font-weight: 500;
+        -webkit-text-fill-color: #94a3b8;
+    }
+
+    .sidebar-perks-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 25px 0;
+    }
+
+    .sidebar-perks-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.88rem;
+        color: #475569;
+        margin-bottom: 12px;
+    }
+
+    .btn-book-primary-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 16px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        box-shadow: 0 8px 20px -4px rgba(221, 36, 118, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .btn-book-primary-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -4px rgba(221, 36, 118, 0.5);
+        color: #ffffff;
+    }
+
+    /* Related destinations grid */
+    .related-section {
+        max-width: 1250px;
+        margin: 50px auto 0;
+        padding: 0 20px;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .related-card {
+        background: #ffffff;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .related-img {
+        height: 160px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .related-info {
+        padding: 18px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (max-width: 900px) {
+        .quick-facts-bar {
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .dest-main-grid {
+            grid-template-columns: 1fr;
+        }
+        .booking-sticky-box {
+            position: relative;
+            top: 0;
+        }
+        .dest-hero-title {
+            font-size: 2.4rem;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .quick-facts-bar {
+            grid-template-columns: 1fr;
+            padding: 20px;
+        }
+        .inclusions-grid {
+            grid-template-columns: 1fr;
+        }
+        .detail-card-panel {
+            padding: 25px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dest-detail-page">
+    <!-- Hero Banner -->
+    <section class="dest-hero-section">
+        <div class="hero-inner-container">
+            <div class="dest-breadcrumb">
+                <a href="{% url 'home' %}">Home</a>
+                <span>›</span>
+                <a href="{% url 'destinations' %}">Destinations</a>
+                <span>›</span>
+                <span>{{ destination.name }}</span>
+            </div>
+
+            <div class="dest-tag-pills">
+                <span class="tag-category-badge">{{ destination.category.name }}</span>
+                <span class="tag-rating-badge">★ {% if destination.is_featured %}4.9 / 5.0 (Featured){% else %}4.7 / 5.0{% endif %}</span>
+            </div>
+
+            <h1 class="dest-hero-title">{{ destination.name }}</h1>
+            <p class="dest-hero-loc">📍 {{ destination.location }}</p>
+        </div>
+    </section>
+
+    <!-- Quick Facts Bar -->
+    <div class="quick-facts-bar">
+        <div class="fact-item">
+            <div class="fact-icon">🌤️</div>
+            <div>
+                <div class="fact-label">Best Season</div>
+                <div class="fact-val">{{ destination.best_time_to_visit|default:"Sept - March" }}</div>
+            </div>
+        </div>
+        <div class="fact-item">
+            <div class="fact-icon">⏱️</div>
+            <div>
+                <div class="fact-label">Duration</div>
+                <div class="fact-val">{% if "Beach" in destination.name or "Goa" in destination.name %}3 - 4 Days{% elif "Munnar" in destination.name or "Ooty" in destination.name %}2 - 3 Days{% else %}4 - 5 Days{% endif %}</div>
+            </div>
+        </div>
+        <div class="fact-item">
+            <div class="fact-icon">✈️</div>
+            <div>
+                <div class="fact-label">Access By</div>
+                <div class="fact-val">Flight, Train & Bus</div>
+            </div>
+        </div>
+        <div class="fact-item">
+            <div class="fact-icon">🏷️</div>
+            <div>
+                <div class="fact-label">Starting From</div>
+                <div class="fact-val" style="color: #FF512F;">₹{{ destination.price_estimate|floatformat:0 }} / person</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content & Booking Panel -->
+    <div class="dest-main-grid">
+        <!-- Left: Destination Details -->
+        <div>
+            <div class="detail-card-panel">
+                <h2 class="panel-section-title">
+                    <span>📖</span> Overview & Experience
+                </h2>
+                <p class="dest-description-text">
+                    {{ destination.description }}
+                </p>
+                <p class="dest-description-text" style="margin-bottom: 0;">
+                    Immerse yourself in authentic cultural heritage, breathtaking scenic vistas, and hand-curated experiences organized by VAHAD travel specialists.
+                </p>
+            </div>
+
+            <div class="detail-card-panel">
+                <h2 class="panel-section-title">
+                    <span>✨</span> What's Included in Your Package
+                </h2>
+                <div class="inclusions-grid">
+                    <div class="inclusion-item"><span>🏨</span> Handpicked Resort / Hotel Stay</div>
+                    <div class="inclusion-item"><span>🍳</span> Complimentary Daily Breakfast</div>
+                    <div class="inclusion-item"><span>🚗</span> Sanitized Local Sightseeing Transfers</div>
+                    <div class="inclusion-item"><span>🧭</span> Licensed Local Guided Excursions</div>
+                    <div class="inclusion-item"><span>🛡️</span> 24/7 Dedicated VAHAD Concierge</div>
+                    <div class="inclusion-item"><span>🪙</span> Earn 150 Loyalty Reward Points</div>
+                </div>
+            </div>
+
+            <div class="detail-card-panel">
+                <h2 class="panel-section-title">
+                    <span>🎒</span> Essential Travel Tips
+                </h2>
+                <ul style="color: #475569; font-size: 0.95rem; line-height: 1.8; padding-left: 20px; margin: 0;">
+                    <li>Carry government-issued photo ID (Aadhaar, Passport, or Voter ID) for seamless hotel check-in.</li>
+                    <li>Best visited during <strong>{{ destination.best_time_to_visit|default:"Sept - March" }}</strong> for optimal weather and clear skies.</li>
+                    <li>Comfortable walking footwear and a camera are strongly recommended for sightseeing trails.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right: Sticky Booking CTA -->
+        <div class="booking-sticky-box">
+            <div class="sidebar-price-banner">
+                <div>
+                    <div class="price-starts-label">Package Rate</div>
+                    <div style="font-size: 0.85rem; color: #10b981; font-weight: 700;">● Best Price Guaranteed</div>
+                </div>
+                <div class="sidebar-price-val">
+                    ₹{{ destination.price_estimate|floatformat:0 }}<span>/guest</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-perks-list">
+                <li><span>✅</span> Instant confirmation & digital e-ticket</li>
+                <li><span>✅</span> 100% Free cancellation within 24 hours</li>
+                <li><span>✅</span> Flexible hotel tier selection (Budget, Standard, Luxury)</li>
+                <li><span>✅</span> Secure 256-Bit SSL payment processing</li>
+            </ul>
+
+            <a href="{% url 'booking' destination.id %}" class="btn-book-primary-cta">
+                <span>Book This Journey Now</span>
+                <span>➔</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Related Destinations Section -->
+    {% if related_destinations %}
+    <section class="related-section">
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 5px;">
+            More Destinations You May Like
+        </h2>
+        <p style="color: #64748b; margin: 0 0 20px 0; font-size: 0.95rem;">Handcrafted adventures in {{ destination.category.name }} and nearby regions</p>
+        
+        <div class="related-grid">
+            {% for rel in related_destinations %}
+            <a href="{% url 'destination_detail' rel.id %}" class="related-card">
+                {% if rel.image %}
+                <img src="{{ rel.image.url }}" alt="{{ rel.name }}" class="related-img">
+                {% else %}
+                <div style="height: 160px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 2rem;">📍</div>
+                {% endif %}
+                <div class="related-info">
+                    <div style="font-size: 0.8rem; color: #FF512F; font-weight: 700; text-transform: uppercase;">{{ rel.category.name }}</div>
+                    <strong style="font-size: 1.15rem; color: #0f172a; margin: 4px 0;">{{ rel.name }}</strong>
+                    <div style="color: #64748b; font-size: 0.85rem; margin-bottom: 12px;">📍 {{ rel.location }}</div>
+                    <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #DD2476; font-weight: 800; font-size: 1.1rem;">₹{{ rel.price_estimate|floatformat:0 }}</span>
+                        <span style="font-size: 0.82rem; font-weight: 600; color: #FF512F;">View ➔</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

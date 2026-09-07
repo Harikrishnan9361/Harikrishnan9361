@@ -1,0 +1,504 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}My Profile - VAHAD Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ANIMATIONS */
+    @keyframes slideInUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulseGlow {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(255, 215, 0, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+        }
+    }
+
+    body {
+        background-color: #f0f2f5;
+    }
+
+    .profile-header {
+        background: radial-gradient(circle at top right, #1e3c72, #2a5298);
+        padding: 80px 0 100px;
+        /* Extended padding for overlap */
+        color: white;
+        position: relative;
+        overflow: hidden;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+    }
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: -50px;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+    }
+
+    .profile-info-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        margin-top: -120px;
+        /* Overlap effect */
+        position: relative;
+        z-index: 10;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    .profile-avatar-large {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 6px solid #fff;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .member-badge {
+        background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+        color: #000;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.75rem;
+        display: inline-block;
+        box-shadow: 0 5px 15px rgba(253, 185, 49, 0.4);
+        margin-bottom: 10px;
+    }
+
+    /* DASHBOARD */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 30px;
+        margin-top: 50px;
+    }
+
+    .booking-card {
+        background: #fff;
+        border-radius: 25px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: none;
+    }
+
+    .booking-card h3 {
+        padding: 30px;
+        margin: 0;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fafafa;
+        color: #333;
+    }
+
+    .table-pro {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-pro th {
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: #888;
+        padding: 20px 30px;
+        background: #fff;
+        border-bottom: 2px solid #f5f5f5;
+    }
+
+    .table-pro td {
+        padding: 25px 30px;
+        border-bottom: 1px solid #f9f9f9;
+        transition: 0.2s;
+    }
+
+    .table-pro tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table-pro tr:hover td {
+        background: #f8fbff;
+    }
+
+    /* STATS WIDGETS */
+    .stats-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .stat-box {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.02);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: 0.3s;
+        border: 1px solid transparent;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        border-color: #2a5298;
+        box-shadow: 0 15px 30px rgba(42, 82, 152, 0.1);
+    }
+
+    .stat-icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+    }
+
+    /* PRO CARD WIDGET */
+    .pro-card-widget {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border-radius: 25px;
+        padding: 30px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pro-card-widget::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: white;
+        opacity: 0.05;
+        border-radius: 50%;
+    }
+
+    .btn-action-sm {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+        text-decoration: none;
+        margin-right: 5px;
+    }
+
+    .btn-view {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .btn-view:hover {
+        background: #1565c0;
+        color: white;
+    }
+
+    .btn-cancel {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .btn-cancel:hover {
+        background: #c62828;
+        color: white;
+    }
+
+    /* EDIT MODAL */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <h1>VAHAD Accounts</h1>
+        <p style="opacity: 0.8;">Manage your journeys and premium benefits</p>
+    </div>
+</div>
+<br>
+<br>
+<div class="container">
+    <!-- Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div
+        style="background: #025a09; color: #2e7d32; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #c8e6c9;">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="profile-info-card">
+        <div class="profile-avatar-large">
+            {% if user.userprofile.profile_photo %}
+            <img src="{{ user.userprofile.profile_photo.url }}"
+                style="width: 100%; height: 100%; border-radius: 20px; object-fit: cover;">
+            {% else %}
+            👤
+            {% endif %}
+        </div>
+        <div style="flex: 1;">
+            <div class="member-badge">✨ VAHAD Pro Member</div>
+            <h2 style="margin: 5px 0 0; font-size: 2.2rem; color: #0c3bf4;">{{ user.username }}</h2>
+            <p style="color: #666; margin: 5px 0;">{{ user.email }} | {{ user.userprofile.phone }}</p>
+        </div>
+        <div>
+            <button onclick="openModal()" class="btn-book"
+                style="padding: 12px 30px; border-radius: 30px; font-weight: 600; cursor: pointer; border: none; background: #1a2a6c; color: white;">
+                ⚙️ Edit Settings
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Main: Booking History -->
+        <div class="booking-card">
+            <h3 style="color: #f61ba9; margin-bottom: 10px;">Travel History</h3>
+            <div style="overflow-x: auto;">
+                <table class="table-pro">
+                    <thead>
+                        <tr>
+                            <th>Destination</th>
+                            <th>Travel Date</th>
+                            <th>Travelers</th>
+                            <th>Status</th>
+                            <th>Actions</th> <!-- Renamed from Details -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    {% if booking.destination.image %}
+                                    <img src="{{ booking.destination.image.url }}"
+                                        style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                    {% endif %}
+                                    <strong style="color: #333;">{{ booking.destination.name }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ booking.travel_date|date:"d M Y" }}</td>
+                            <td>{{ booking.num_travelers }} Person(s)</td>
+                            <td>
+                                {% if booking.booking_status == 'Cancelled' %}
+                                <span class="status-pill" style="background: #ffebee; color: #c62828; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">❌ Cancelled</span>
+                                {% elif booking.is_paid %}
+                                <span class="status-pill" style="background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">✅ Confirmed</span>
+                                {% else %}
+                                <span class="status-pill" style="background: #fff3e0; color: #ef6c00; padding: 5px 10px; border-radius: 12px; font-size: 0.85rem;">⏳ Payment Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display: flex;">
+                                    <a href="{% url 'confirmation' booking.booking_id %}" class="btn-action-sm btn-view"
+                                        title="View Ticket">👁️</a>
+                                    {% if booking.booking_status != 'Cancelled' %}
+                                    <a href="{% url 'cancel_booking' booking.booking_id %}"
+                                        onclick="return confirm('Are you sure you want to cancel this booking? This action cannot be undone.')"
+                                        class="btn-action-sm btn-cancel" title="Cancel Booking">🗑️</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 50px; color: #999;">
+                                No recent bookings. Start your journey today!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sidebar: Stats -->
+        <div class="stats-col">
+            <div class="stat-box">
+                <div class="stat-icon-circle" style="background: #fff4de; color: #ffab00;">🪙</div>
+                <div>
+                    <h4 style="margin: 0; font-size: 1.4rem;">{{ points }}</h4>
+                    <p style="margin: 0; color: #777; font-size: 0.85rem;">Reward Points</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon-circle" style="background: #e1f5fe; color: #03a9f4;">🗺️</div>
+                <div>
+                    <h4 style="margin: 0; font-size: 1.4rem;">{{ bookings.count }}</h4>
+                    <p style="margin: 0; color: #777; font-size: 0.85rem;">Total Bookings</p>
+                </div>
+            </div>
+
+            <div
+                style="background: linear-gradient(135deg, #1a2a6c, #2c3e50); border-radius: 20px; padding: 30px; color: white; margin-top: 30px;">
+                <h4 style="color: #ffd700; margin-top: 0;">Pro Benefits 💎</h4>
+                <ul style="padding-left: 20px; font-size: 0.85rem; opacity: 0.9;">
+                    <li>15% Point Multiplier</li>
+                    <li>Priority Processing</li>
+                    <li>Exclusive Deal Access</li>
+                </ul>
+                <a href="{% url 'premium' %}"
+                    style="display: block; text-align: center; margin-top: 20px; background: rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 30px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2);">View
+                    All Benefits</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-card">
+        <h2 style="margin-top: 0; color: #1a2a6c;">Edit Profile Settings</h2>
+        <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 20px; text-align: center;">
+                <label for="id_profile_photo" style="cursor: pointer; display: inline-block; position: relative;">
+                    <div
+                        style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid #1a2a6c; margin: 0 auto;">
+                        {% if user.userprofile.profile_photo %}
+                        <img src="{{ user.userprofile.profile_photo.url }}" id="preview_img"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        <div
+                            style="width: 100%; height: 100%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                            👤</div>
+                        {% endif %}
+                    </div>
+                    <div
+                        style="background: #1a2a6c; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; margin-top: 10px; display: inline-block;">
+                        Change Photo 📸</div>
+                </label>
+                <input type="file" name="profile_photo" id="id_profile_photo" style="display: none;"
+                    onchange="previewImage(this)">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">First Name</label>
+                <input type="text" name="first_name" value="{{ user.first_name }}"
+                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Last Name</label>
+                <input type="text" name="last_name" value="{{ user.last_name }}"
+                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email Address</label>
+                <input type="email" name="email" value="{{ user.email }}"
+                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number</label>
+                <input type="tel" name="phone" value="{{ user.userprofile.phone }}"
+                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit"
+                    style="flex: 1; background: #1a2a6c; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">Save
+                    Changes</button>
+                <button type="button" onclick="closeModal()"
+                    style="flex: 1; background: #eee; color: #333; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('editModal').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('preview_img').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Close on click outside
+    window.onclick = function (event) {
+        if (event.target == document.getElementById('editModal')) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

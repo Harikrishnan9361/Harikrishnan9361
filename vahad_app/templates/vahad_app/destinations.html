@@ -1,0 +1,153 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/destination.css' %}?v=2.0">
+<style>
+    /* Direct High-Priority Header Nature Styles */
+    .page-header {
+        position: relative !important;
+        background: linear-gradient(135deg, rgba(6, 44, 25, 0.65) 0%, rgba(10, 25, 18, 0.75) 100%), 
+                    url('https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=2000&q=85') no-repeat center center !important;
+        background-size: cover !important;
+        background-position: center 45% !important;
+        padding: 140px 20px 100px !important;
+        text-align: center !important;
+        color: #ffffff !important;
+        margin-bottom: 20px !important;
+    }
+
+    .page-header h1 {
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 3.6rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 12px !important;
+        letter-spacing: -0.5px !important;
+        color: #00e676 !important;
+        -webkit-text-fill-color: #00e676 !important;
+        background: none !important;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 230, 118, 0.3) !important;
+        animation: fadeInDown 0.8s ease-out !important;
+    }
+
+    .page-header p {
+        font-size: 1.25rem !important;
+        font-weight: 400 !important;
+        color: #f1f5f9 !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Explore Destinations - VAHAD{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="page-header">
+    <h1>Explore Destinations</h1>
+    <p>Find your next perfect getaway from our premium selection</p>
+</header>
+
+<!-- Floating Filter Bar -->
+<div class="filter-bar">
+    <a href="{% url 'destinations' %}{% if current_location %}?location={{ current_location }}{% endif %}{% if search_query %}{% if current_location %}&{% else %}?{% endif %}q={{ search_query }}{% endif %}" class="filter-btn {% if not current_category %}active{% endif %}">All Categories</a>
+    {% for category in categories %}
+    <a href="?category={{ category.id }}{% if current_location %}&location={{ current_location }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+        class="filter-btn {% if current_category == category.id %}active{% endif %}">
+        {{ category.name }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="container">
+    <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <p style="font-size: 1.1rem; color: #475569; margin: 0; font-weight: 500;">
+                Showing <strong style="color: #0f172a;">{{ destinations|length }}</strong> {% if destinations|length == 1 %}getaway{% else %}getaways{% endif %}
+            </p>
+
+            {% if current_location %}
+            <span style="display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 4px 12px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">
+                📍 {{ current_location }}
+                <a href="?{% if current_category %}category={{ current_category }}{% endif %}{% if search_query %}{% if current_category %}&{% endif %}q={{ search_query }}{% endif %}" style="color: #1d4ed8; text-decoration: none; font-weight: 800;" title="Remove location filter">✕</a>
+            </span>
+            {% endif %}
+
+            {% if search_query %}
+            <span style="display: inline-flex; align-items: center; gap: 6px; background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; padding: 4px 12px; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">
+                🔍 "{{ search_query }}"
+                <a href="?{% if current_category %}category={{ current_category }}{% endif %}{% if current_location %}{% if current_category %}&{% endif %}location={{ current_location }}{% endif %}" style="color: #be185d; text-decoration: none; font-weight: 800;" title="Remove search filter">✕</a>
+            </span>
+            {% endif %}
+        </div>
+        
+        {% if search_query or current_category or current_location %}
+        <div>
+            <a href="{% url 'destinations' %}" class="clear-filters-btn">Clear All Filters ×</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="places-grid">
+        {% for destination in destinations %}
+        <div class="place-card">
+            <a href="{% url 'destination_detail' destination.id %}" class="place-img-container" style="display: block; text-decoration: none;">
+                {% if destination.image %}
+                <div class="place-img" style="background-image: url('{{ destination.image.url }}');"></div>
+                {% else %}
+                <div class="place-img placeholder-img">📍</div>
+                {% endif %}
+                {% if destination.is_featured %}
+                <span class="badge badge-featured">★ Featured</span>
+                {% endif %}
+                <span class="badge badge-category">{{ destination.category.name }}</span>
+            </a>
+
+            <div class="place-content">
+                <a href="{% url 'destination_detail' destination.id %}" style="text-decoration: none; color: inherit;">
+                    <h3 class="place-title" style="transition: color 0.2s;">{{ destination.name }}</h3>
+                </a>
+                <div class="place-location">📍 {{ destination.location }}</div>
+
+                <div class="place-details-grid">
+                    <div class="detail-item">
+                        <strong>Best Season</strong>
+                        {{ destination.best_time_to_visit|default:"Sept - March" }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Category</strong>
+                        {{ destination.category.name }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Duration</strong>
+                        {% if "Beach" in destination.name or "Goa" in destination.name %}3-4 Days{% elif "Munnar" in destination.name or "Ooty" in destination.name %}2-3 Days{% else %}4-5 Days{% endif %}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Rating</strong>
+                        {% if destination.is_featured %}4.9 ★{% else %}4.6 ★{% endif %}
+                    </div>
+                </div>
+
+                <div class="place-footer">
+                    <div class="place-price">
+                        ₹{{ destination.price_estimate|floatformat:0 }}
+                        <span>/ person</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="{% url 'destination_detail' destination.id %}" class="filter-btn" style="padding: 10px 16px; font-size: 0.85rem;" title="View Details">Details</a>
+                        <a href="{% url 'booking' destination.id %}" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+            <p style="font-size: 1.3rem; color: #999; margin-bottom: 20px;">No destinations found matching your criteria.</p>
+            <a href="{% url 'destinations' %}" class="book-btn" style="display: inline-block; width: auto; padding: 10px 30px;">View All Destinations</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}403 - Access Restricted | VAHAD Travel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-page-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 20px;
+        background: radial-gradient(circle at 20% 30%, rgba(245, 158, 11, 0.08) 0%, transparent 45%),
+                    radial-gradient(circle at 80% 70%, rgba(255, 81, 47, 0.08) 0%, transparent 45%),
+                    #f8fafc;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .error-card {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid #e2e8f0;
+        border-radius: 28px;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 580px;
+        padding: 50px 40px;
+        text-align: center;
+        animation: errorCardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        z-index: 1;
+    }
+
+    @keyframes errorCardEnter {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.96);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .error-illustration {
+        font-size: 5rem;
+        line-height: 1;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .error-code-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #ffffff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1rem;
+        font-weight: 800;
+        padding: 6px 18px;
+        border-radius: 50px;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+    }
+
+    .error-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .error-desc {
+        color: #64748b;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin: 0 0 30px 0;
+    }
+
+    .error-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-error-primary {
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        color: #ffffff;
+        text-decoration: none;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 14px 28px;
+        border-radius: 50px;
+        box-shadow: 0 8px 20px rgba(255, 81, 47, 0.25);
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-error-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(255, 81, 47, 0.35);
+        color: #ffffff;
+    }
+
+    .btn-error-secondary {
+        background: #f1f5f9;
+        color: #334155;
+        text-decoration: none;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 14px 28px;
+        border-radius: 50px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-error-secondary:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-page-container">
+    <div class="error-card">
+        <div class="error-illustration">🔒</div>
+        <div>
+            <span class="error-code-badge">ERROR 403</span>
+        </div>
+        <h1 class="error-title">Restricted Territory</h1>
+        <p class="error-desc">
+            You do not have permission to access this resource or page.
+        </p>
+        <div class="error-actions">
+            <a href="{% url 'home' %}" class="btn-error-primary">
+                <span>🏠 Return Home</span>
+            </a>
+            <a href="{% url 'destinations' %}" class="btn-error-secondary">
+                <span>🌴 Explore Destinations</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

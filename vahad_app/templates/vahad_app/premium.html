@@ -1,0 +1,145 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}VAHAD Premium - Exclusive Travel Benefits{% endblock %}
+
+{% block extra_css %}
+<style>
+    .premium-hero {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        padding: 100px 0;
+        text-align: center;
+        color: white;
+    }
+
+    .premium-hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin: 60px 0;
+    }
+
+    .benefit-card {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: transform 0.3s;
+        border: 1px solid #eee;
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-10px);
+        border-color: #ffd700;
+    }
+
+    .benefit-icon {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .pricing-card {
+        max-width: 500px;
+        margin: 80px auto;
+        background: #fff;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        border: 2px solid #ffd700;
+    }
+
+    .pricing-header {
+        background: #fdfbfb;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .pricing-price {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-color);
+    }
+
+    .pricing-features {
+        padding: 40px;
+        list-style: none;
+    }
+
+    .pricing-features li {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #555;
+    }
+
+    .btn-premium {
+        display: block;
+        width: 100%;
+        padding: 20px;
+        background: linear-gradient(45deg, #ffd700, #ffaa00);
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.2rem;
+        transition: opacity 0.3s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="premium-hero">
+    <div class="container">
+        <h1>Experience Travel with 💎</h1>
+        <h2 style="font-size: 2rem;">VAHAD Premium</h2>
+        <p style="font-size: 1.2rem; max-width: 700px; margin: 20px auto;">Unlock exclusive benefits, priority bookings,
+            and luxury experiences across Incredible India.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="benefits-grid">
+        <div class="benefit-card">
+            <span class="benefit-icon">🏢</span>
+            <h3>Priority Hotel Check-in</h3>
+            <p style="color: #777;">Skip the lines and enjoy early check-in at all our partner luxury resorts.</p>
+        </div>
+        <div class="benefit-card">
+            <span class="benefit-icon">🎧</span>
+            <h3>24/7 Dedicated Support</h3>
+            <p style="color: #777;">A personal travel concierge available anytime to assist with your journey.</p>
+        </div>
+        <div class="benefit-card">
+            <span class="benefit-icon">📅</span>
+            <h3>Flexible Rescheduling</h3>
+            <p style="color: #777;">Change your travel dates up to 48 hours before departure with zero fees.</p>
+        </div>
+    </div>
+
+    <div class="pricing-card">
+        <div class="pricing-header">
+            <span
+                style="background: #fff3cd; color: #856404; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 0.8rem;">ANNUAL
+                PLAN</span>
+            <div class="pricing-price">₹2,999<span style="font-size: 1rem; color: #777;">/year</span></div>
+            <p style="color: #777; margin-top: 10px;">The ultimate travel companion for explorers.</p>
+        </div>
+        <ul class="pricing-features">
+            <li>✅ All Premium Benefits Included</li>
+            <li>✅ 15% Extra VAHAD Reward Points</li>
+            <li>✅ Free Airport Lounge Access</li>
+            <li>✅ Exclusive "Members Only" Destinations</li>
+        </ul>
+        <a href="#" class="btn-premium">Become a Member</a>
+    </div>
+</div>
+{% endblock %}

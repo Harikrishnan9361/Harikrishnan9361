@@ -1,0 +1,430 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}About VAHAD - The Future of Travel{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* UNIQUE MODERNIST THEME */
+    :root {
+        --accent-pink: #ff0055;
+        --accent-lime: #ccff00;
+        --deep-space: #0b0b0b;
+    }
+
+    body {
+        font-family: 'Space Grotesk', sans-serif;
+        background: #fff;
+    }
+
+    /* 3D PARALLAX HERO CONTAINER */
+    .hero-container {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 50px;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        background: #f8f8f8;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 5;
+    }
+
+    /* FLOATING SHAPES */
+    .shape {
+        position: absolute;
+        filter: blur(45px);
+        z-index: 1;
+        opacity: 0.55;
+        animation: floatShape 10s ease-in-out infinite alternate;
+    }
+
+    .shape-1 {
+        width: 280px;
+        height: 280px;
+        background: var(--accent-lime);
+        top: -50px;
+        right: 10%;
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    }
+
+    .shape-2 {
+        width: 220px;
+        height: 220px;
+        background: var(--accent-pink);
+        bottom: 20px;
+        left: 5%;
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+
+    @keyframes floatShape {
+        from {
+            transform: translate(0, 0) scale(1);
+        }
+        to {
+            transform: translate(25px, 45px) rotate(15deg) scale(1.1);
+        }
+    }
+
+    /* 3D INTERACTIVE VISUAL SCENE */
+    .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 5;
+    }
+
+    .scene-3d {
+        width: 100%;
+        height: 400px;
+        perspective: 1200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card-stack-3d {
+        width: 320px;
+        height: 280px;
+        position: relative;
+        transform-style: preserve-3d;
+        transform: rotateX(55deg) rotateY(0deg) rotateZ(-40deg);
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .scene-3d:hover .card-stack-3d {
+        transform: rotateX(45deg) rotateY(0deg) rotateZ(-25deg) translateY(-20px);
+    }
+
+    .card-3d {
+        position: absolute;
+        width: 260px;
+        height: 150px;
+        border-radius: 20px;
+        padding: 24px;
+        color: white;
+        box-shadow: 15px 15px 35px rgba(0, 0, 0, 0.25);
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
+        transform-style: preserve-3d;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-3d:hover {
+        box-shadow: 20px 20px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-3d-1 {
+        background: linear-gradient(135deg, var(--accent-pink), #7000ff);
+        transform: translateZ(30px);
+        top: 0;
+        left: 0;
+        animation: float-1 5s ease-in-out infinite alternate;
+    }
+
+    .card-3d-2 {
+        background: linear-gradient(135deg, #00f0ff, #0055ff);
+        transform: translateZ(70px);
+        top: 50px;
+        left: 40px;
+        animation: float-2 5s ease-in-out infinite alternate;
+        animation-delay: 0.6s;
+    }
+
+    .card-3d-3 {
+        background: linear-gradient(135deg, var(--accent-lime), #00bb60);
+        color: var(--deep-space);
+        transform: translateZ(110px);
+        top: 100px;
+        left: 80px;
+        animation: float-3 5s ease-in-out infinite alternate;
+        animation-delay: 1.2s;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    @keyframes float-1 {
+        0% { transform: translateZ(30px) translateY(0px); }
+        100% { transform: translateZ(30px) translateY(-10px); }
+    }
+    @keyframes float-2 {
+        0% { transform: translateZ(70px) translateY(0px); }
+        100% { transform: translateZ(70px) translateY(-15px); }
+    }
+    @keyframes float-3 {
+        0% { transform: translateZ(110px) translateY(0px); }
+        100% { transform: translateZ(110px) translateY(-20px); }
+    }
+
+    /* STORY CARD IN 3D */
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 80px;
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 50px;
+        align-items: center;
+    }
+
+    .story-img-container {
+        position: relative;
+        perspective: 1000px;
+        transform-style: preserve-3d;
+        cursor: pointer;
+    }
+
+    .story-img {
+        width: 100%;
+        border-radius: 0;
+        filter: grayscale(100%);
+        transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        box-shadow: 20px 20px 0 var(--deep-space);
+        border: 2px solid var(--deep-space);
+        transform: translateZ(0px);
+    }
+
+    .story-img-container:hover .story-img {
+        transform: translateZ(50px) translate(-10px, -10px);
+        box-shadow: 30px 30px 0 var(--accent-lime);
+        filter: grayscale(0%);
+    }
+
+    /* FUTURES SECTION 3D GRID */
+    .futures-section {
+        background: var(--deep-space);
+        padding: 100px 20px;
+        color: white;
+        border-radius: 40px 40px 0 0;
+    }
+
+    .futures-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1100px;
+        margin: 50px auto 0;
+        perspective: 1000px;
+    }
+
+    .future-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 40px;
+        transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        transform-style: preserve-3d;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .future-card h3, .future-card p {
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .future-card:hover {
+        background: var(--accent-pink);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 20px 40px rgba(255, 0, 85, 0.3);
+    }
+
+    .future-card:hover h3 {
+        transform: translateZ(35px);
+        color: white;
+    }
+
+    .future-card:hover p {
+        transform: translateZ(20px);
+    }
+
+    /* BUTTONS */
+    .btn-unique {
+        background: var(--deep-space);
+        color: white;
+        padding: 18px 40px;
+        border: none;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-unique:hover {
+        background: var(--accent-pink);
+        transform: translate(-5px, -5px);
+        box-shadow: 15px 15px 0 var(--deep-space);
+        color: white;
+    }
+
+    .btn-glow {
+        background: white;
+        color: var(--deep-space);
+        border: 2px solid var(--deep-space);
+        padding: 16px 40px;
+        font-weight: 700;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-glow:hover {
+        background: var(--accent-lime);
+        color: var(--deep-space);
+    }
+
+    /* RESPONSIVE HERO */
+    @media (max-width: 991px) {
+        .hero-container {
+            grid-template-columns: 1fr;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hero-visual {
+            margin-top: 50px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 3D Parallax Hero -->
+<div class="hero-container">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="hero-content">
+        <h1 style="font-size: 3.8rem; color: #111; margin-bottom: 20px; line-height: 1.1; font-weight: 800;">
+            We Are <span style="color: #ff357a; -webkit-text-stroke: 2px #ff357a;">VAHAD</span>
+        </h1>
+        <p style="font-size: 1.2rem; color: #555; max-width: 600px; margin-bottom: 40px; line-height: 1.6;">
+            Redefining how the world experiences India. Merging cutting-edge technology with time-honored hospitality to curate memories that stay with you forever.
+        </p>
+        <div style="display: flex; gap: 20px;">
+            <a href="{% url 'rewards' %}" class="btn-unique">View Rewards</a>
+            <a href="{% url 'destinations' %}" class="btn-glow">Explore Now</a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="scene-3d" id="hero-scene">
+            <div class="card-stack-3d" id="card-stack">
+                <!-- Card 1: Destination Card -->
+                <div class="card-3d card-3d-1">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">🏝️ Taj Mahal</div>
+                    <div style="font-size: 0.85rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Destination</div>
+                    <div style="margin-top: 15px; font-weight: 700;">Agra, India</div>
+                </div>
+                <!-- Card 2: Flight/Booking Card -->
+                <div class="card-3d card-3d-2">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">✈️ VAHAD Air</div>
+                    <div style="font-size: 0.85rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Boarding Pass</div>
+                    <div style="margin-top: 15px; font-weight: 700;">Gate 3B • Seat 14A</div>
+                </div>
+                <!-- Card 3: Rewards Card -->
+                <div class="card-3d card-3d-3">
+                    <div style="font-size: 1.5rem; margin-bottom: 10px;">✨ Platinum</div>
+                    <div style="font-size: 0.85rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Loyalty Card</div>
+                    <div style="margin-top: 15px; font-weight: 700;">8,450 Points</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Story Section -->
+<div class="story-grid">
+    <div class="story-img-container" id="story-image-wrap">
+        <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80"
+            class="story-img">
+    </div>
+    <div>
+        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Not Just A Booking Platform</h2>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 20px;">
+            VAHAD started with a simple idea: Travel should be about the **experience**, not the hassle.
+            We replaced complex itineraries with AI-driven smart planning and generic tours with personalized
+            adventures.
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #555;">
+            From the snow-capped peaks of the Himalayas to the backwaters of Kerala, our team curates each journey with
+            precision and passion.
+        </p>
+    </div>
+</div>
+
+<!-- More Futures Section -->
+<div class="futures-section">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 50px;">
+        <h2 style="font-size: 2.5rem;">Coming Soon to VAHAD</h2>
+        <p style="opacity: 0.7; margin-bottom: 30px;">We are constantly innovating. Here is what is next.</p>
+    </div>
+
+    <div class="futures-grid">
+        <div class="future-card">
+            <h3>🤖 AI Guide 2.0</h3>
+            <p>Real-time AR translation and historical narration while you visit monuments.</p>
+        </div>
+        <div class="future-card">
+            <h3>🌍 Carbon Neutral</h3>
+            <p>Eco-friendly travel badges and automated carbon offsetting for every mile you fly.</p>
+        </div>
+        <div class="future-card">
+            <h3>🚁 VAHAD Air</h3>
+            <p>Exclusive helicopter rides to remote valleys available directly in the app.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive 3D Cursor Parallax Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scene = document.getElementById('hero-scene');
+        const stack = document.getElementById('card-stack');
+        
+        if (scene && stack) {
+            scene.addEventListener('mousemove', (e) => {
+                const rect = scene.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                // Rotations calculated from mouse positioning
+                const rotateX = 55 - (y / rect.height) * 20; 
+                const rotateZ = -40 + (x / rect.width) * 35;
+                
+                stack.style.transform = `rotateX(${rotateX}deg) rotateY(0deg) rotateZ(${rotateZ}deg) translateY(-10px)`;
+            });
+            
+            scene.addEventListener('mouseleave', () => {
+                stack.style.transform = `rotateX(55deg) rotateY(0deg) rotateZ(-40deg)`;
+            });
+        }
+
+        // Add minor tilt behavior for the story image container based on hover coordinate
+        const storyWrap = document.getElementById('story-image-wrap');
+        if (storyWrap) {
+            storyWrap.addEventListener('mousemove', (e) => {
+                const rect = storyWrap.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const xc = rect.width / 2;
+                const yc = rect.height / 2;
+                const angleX = (yc - y) / 15;
+                const angleY = (x - xc) / 15;
+                storyWrap.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+            });
+            storyWrap.addEventListener('mouseleave', () => {
+                storyWrap.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            });
+        }
+    });
+</script>
+{% endblock %}

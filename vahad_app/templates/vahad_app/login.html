@@ -1,0 +1,269 @@
+{% extends 'vahad_app/base.html' %}
+{% load static %}
+
+{% block title %}Sign In - VAHAD Travel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page-wrapper {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 20px;
+        position: relative;
+        background: radial-gradient(circle at 10% 20%, rgba(255, 81, 47, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(221, 36, 118, 0.08) 0%, transparent 40%),
+                    #f8fafc;
+        overflow: hidden;
+    }
+
+    .auth-page-wrapper::before {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255, 81, 47, 0.12) 0%, rgba(221, 36, 118, 0.05) 50%, transparent 70%);
+        top: -150px;
+        right: -100px;
+        filter: blur(60px);
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .auth-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 28px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+        width: 100%;
+        max-width: 440px;
+        padding: 45px 40px;
+        position: relative;
+        z-index: 1;
+        animation: authCardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes authCardEnter {
+        from {
+            opacity: 0;
+            transform: translateY(25px) scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 81, 47, 0.1);
+        color: #FF512F;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .auth-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .auth-subtitle {
+        color: #64748b;
+        font-size: 0.92rem;
+        margin: 0;
+    }
+
+    .error-alert-box {
+        background: #fef2f2;
+        border-left: 4px solid #ef4444;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 22px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .error-alert-box p {
+        margin: 4px 0;
+        color: #b91c1c;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .auth-form-group {
+        margin-bottom: 20px;
+    }
+
+    .auth-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        color: #94a3b8;
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+
+    .auth-input {
+        width: 100%;
+        padding: 14px 16px 14px 46px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        font-family: 'Outfit', 'Poppins', sans-serif;
+        font-size: 0.95rem;
+        color: #0f172a;
+        transition: all 0.25s ease;
+        outline: none;
+    }
+
+    .auth-input:focus {
+        background: #ffffff;
+        border-color: #FF512F;
+        box-shadow: 0 0 0 4px rgba(255, 81, 47, 0.12);
+    }
+
+    .auth-input:focus + .input-icon,
+    .input-wrapper:focus-within .input-icon {
+        color: #FF512F;
+    }
+
+    .auth-btn-submit {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px -4px rgba(221, 36, 118, 0.35);
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .auth-btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -4px rgba(221, 36, 118, 0.45);
+        opacity: 0.98;
+    }
+
+    .auth-btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .auth-footer-text {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 0.92rem;
+        color: #64748b;
+    }
+
+    .auth-footer-link {
+        color: #FF512F;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .auth-footer-link:hover {
+        color: #DD2476;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-brand-badge">
+                <span>✈️</span> VAHAD TMS
+            </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to manage your bookings and explore destinations</p>
+        </div>
+
+        {% if form.errors or form.non_field_errors %}
+        <div class="error-alert-box">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p><span>⚠️</span> {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p><span>⚠️</span> {{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="auth-form-group">
+                <label class="auth-label" for="id_username">Username</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" name="username" id="id_username" class="auth-input" placeholder="Enter your username" required autofocus>
+                </div>
+            </div>
+
+            <div class="auth-form-group">
+                <label class="auth-label" for="id_password">Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" name="password" id="id_password" class="auth-input" placeholder="Enter your password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="auth-btn-submit">
+                <span>Sign In</span>
+                <span>➔</span>
+            </button>
+        </form>
+
+        <p class="auth-footer-text">
+            Don't have an account? <a href="{% url 'register' %}" class="auth-footer-link">Create Account</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

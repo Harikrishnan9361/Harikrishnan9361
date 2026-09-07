@@ -1,0 +1,22 @@
+/* Modernized Login Stylesheet */
+.auth-page-wrapper {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    background: radial-gradient(circle at 10% 20%, rgba(255, 81, 47, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(221, 36, 118, 0.08) 0%, transparent 40%),
+                #f8fafc;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 440px;
+    padding: 45px 40px;
+}
